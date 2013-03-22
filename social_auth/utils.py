@@ -72,6 +72,7 @@ except ImportError:  # django < 1.4
 
 try:
     from django.utils.functional import empty
+    empty  # placate pyflakes
 except ImportError:  # django < 1.4
     empty = None
 
@@ -256,6 +257,29 @@ def dsa_urlopen(*args, **kwargs):
 
 def get_backend_name(backend):
     return getattr(getattr(backend, 'AUTH_BACKEND', backend), 'name', None)
+
+
+def custom_user_frozen_models():
+    user_model = getattr(settings, 'SOCIAL_AUTH_USER_MODEL', None) or \
+                 getattr(settings, 'AUTH_USER_MODEL', None) or \
+                 'auth.User'
+    migration_name = getattr(settings, 'INITIAL_CUSTOM_USER_MIGRATION',
+                             '0001_initial.py')
+    if user_model != 'auth.User':
+        from south.migration.base import Migrations
+        from south.exceptions import NoMigrations
+        from south.creator.freezer import freeze_apps
+        user_app, user_model = user_model.split('.')
+        try:
+            user_migrations = Migrations(user_app)
+        except NoMigrations:
+            extra_model = freeze_apps(user_app)
+        else:
+            initial_user_migration = user_migrations.migration(migration_name)
+            extra_model = initial_user_migration.migration_class().models
+    else:
+        extra_model = {}
+    return extra_model
 
 
 if __name__ == '__main__':

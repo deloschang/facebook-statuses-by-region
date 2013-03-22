@@ -2,7 +2,7 @@ from urllib import urlencode
 
 from django.utils import simplejson
 
-from social_auth.backends import BaseOAuth2, OAuthBackend, USERNAME
+from social_auth.backends import BaseOAuth2, OAuthBackend
 from social_auth.utils import dsa_urlopen
 
 
@@ -21,10 +21,10 @@ class InstagramBackend(OAuthBackend):
     def get_user_details(self, response):
         """Return user details from Instagram account"""
         username = response['user']['username']
-        fullname = response['user'].get('fullname', '')
+        fullname = response['user'].get('full_name', '')
         email = response['user'].get('email', '')
         return {
-            USERNAME: username,
+            'username': username,
             'first_name': fullname,
             'email': email
         }

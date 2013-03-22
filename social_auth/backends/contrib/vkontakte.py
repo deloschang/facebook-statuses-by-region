@@ -15,8 +15,8 @@ from hashlib import md5
 from time import time
 
 from social_auth.backends import SocialAuthBackend, OAuthBackend, BaseAuth, \
-                                 BaseOAuth2, USERNAME
-from social_auth.exceptions import AuthTokenRevoked, AuthException
+                                 BaseOAuth2
+from social_auth.exceptions import AuthTokenRevoked, AuthException, AuthCanceled, AuthFailed
 from social_auth.utils import setting, log, dsa_urlopen
 
 
@@ -45,9 +45,11 @@ class VKontakteBackend(SocialAuthBackend):
 
     def get_user_details(self, response):
         """Return user details from VKontakte request"""
-        nickname = response.get('nickname') or ''
+        nickname = response.get('nickname') or response['id']
+        if isinstance(nickname, (list, tuple, )):
+            nickname = nickname[0]
         return {
-            USERNAME: response['id'] if len(nickname) == 0 else nickname,
+            'username': nickname,
             'email': '',
             'fullname': '',
             'first_name': response.get('first_name')[0]
@@ -86,7 +88,7 @@ class VKontakteAuth(BaseAuth):
 
         if not 'id' in self.request.GET or \
            not app_cookie in self.request.COOKIES:
-            raise ValueError('VKontakte authentication is not completed')
+            raise AuthCanceled(self)
 
         cookie_dict = dict(item.split('=') for item in
                                 self.request.COOKIES[app_cookie].split('&'))
@@ -96,7 +98,7 @@ class VKontakteAuth(BaseAuth):
         hash = md5(check_str + setting('VKONTAKTE_APP_SECRET')).hexdigest()
 
         if hash != cookie_dict['sig'] or int(cookie_dict['expire']) < time():
-            raise ValueError('VKontakte authentication failed: invalid hash')
+            raise AuthFailed('VKontakte authentication failed: invalid hash')
         else:
             kwargs.update({
                 'auth': self,
@@ -119,7 +121,7 @@ class VKontakteOAuth2Backend(OAuthBackend):
 
     EXTRA_DATA = [
         ('id', 'id'),
-        ('expires', setting('SOCIAL_AUTH_EXPIRATION', 'expires'))
+        ('expires', 'expires')
     ]
 
     def get_user_id(self, details, response):
@@ -129,8 +131,8 @@ class VKontakteOAuth2Backend(OAuthBackend):
     def get_user_details(self, response):
         """Return user details from Vkontakte account"""
         return {
-            USERNAME: response.get('screen_name'),
-            'email':  '',
+            'username': response.get('screen_name'),
+            'email': '',
             'first_name': response.get('first_name'),
             'last_name': response.get('last_name')
         }

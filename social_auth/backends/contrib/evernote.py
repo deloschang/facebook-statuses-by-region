@@ -13,8 +13,8 @@ except ImportError:
 
 from oauth2 import Token
 from social_auth.utils import setting
-from social_auth.backends import ConsumerBasedOAuth, OAuthBackend, USERNAME, \
-                                 exceptions
+from social_auth.backends import ConsumerBasedOAuth, OAuthBackend
+from social_auth.exceptions import AuthCanceled
 
 
 if setting('EVERNOTE_DEBUG', False):
@@ -50,13 +50,22 @@ class EvernoteBackend(OAuthBackend):
         ('access_token', 'access_token'),
         ('oauth_token', 'oauth_token'),
         ('edam_noteStoreUrl', 'store_url'),
-        ('edam_expires', setting('SOCIAL_AUTH_EXPIRATION', 'expires'))
+        ('edam_expires', 'expires')
     ]
+
+    @classmethod
+    def extra_data(cls, user, uid, response, details=None):
+        data = super(EvernoteBackend, cls).extra_data(user, uid, response, details)
+        # Evernote returns expiration timestamp in miliseconds, so it needs to
+        # be normalized.
+        if 'expires' in data:
+            data['expires'] = unicode(int(data['expires']) / 1000)
+        return data
 
     def get_user_details(self, response):
         """Return user details from Evernote account"""
         return {
-            USERNAME: response['edam_userId'],
+            'username': response['edam_userId'],
             'email': '',
         }
 
@@ -82,7 +91,7 @@ class EvernoteAuth(ConsumerBasedOAuth):
         except HTTPError, e:
             # Evernote returns a 401 error when AuthCanceled
             if e.code == 401:
-                raise exceptions.AuthCanceled(self)
+                raise AuthCanceled(self)
             else:
                 raise
 
