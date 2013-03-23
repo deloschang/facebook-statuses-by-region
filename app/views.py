@@ -6,8 +6,8 @@ from django.utils import simplejson
 
 import random
 
-DESIGNATED = "Billy Peters"
 FB_DESIGNATED = 'billy.peters.10'
+
 
 def markov_chain():
     file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
