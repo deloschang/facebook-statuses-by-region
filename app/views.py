@@ -28,15 +28,26 @@ def pull_facebook(access_token):
 
     data = full_data['statuses']['data']
 
+    # retrieves users' name
+    name = full_data['name'].replace(" ", "_")
+
     #import pdb;
     #pdb.set_trace()
 
+
+    # initialize a unique corpus text file
+    corpus = open("output/"+name+".txt", 'w')
 
     # PARSE
     counter = 0 
     for status_update in data:
         # parse the status updates
-        #print data['statuses']['data'][counter]['message']
+        #import pdb;
+        #pdb.set_trace()
+
+        if 'message' in data[counter]:
+            message = data[counter]['message']
+            corpus.write(message.encode('utf-8') + "\n")
 
 
         # parse the comment messages
@@ -46,17 +57,17 @@ def pull_facebook(access_token):
 
                 # integrity check for chosen user
                 if data[counter]['comments']['data'][comment_counter]['from']['name'] == DESIGNATED:
-                    print data[counter]['comments']['data'][comment_counter]['message']
+                    corpus.write(data[counter]['comments']['data'][comment_counter]['message'].encode('utf-8') + "\n")
 
                 comment_counter += 1
 
 
         counter += 1
 
-        # parse comment material too
+    corpus.close()
 
-    # add into a corpus
 
+    return 'Extracted '+counter+' messages and '+comment_counter+' comments.'
 
     #return data
 
