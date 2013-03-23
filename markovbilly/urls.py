@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
      url(r'^$', 'app.views.home', name='home'),
      url(r'', include('social_auth.urls')),
+
     # url(r'^markovbilly/', include('markovbilly.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
