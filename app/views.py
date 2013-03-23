@@ -1,6 +1,8 @@
 # libraries
 from django.shortcuts import render_to_response
 from facepy import GraphAPI
+#import json
+from django.utils import simplejson
 
 def home(request):
 
@@ -20,6 +22,19 @@ def home(request):
 
 def pull_facebook(access_token):
     graph = GraphAPI(access_token)
-    return graph.get('billy.peters.10?fields=id,name,statuses.fields(from,message,comments.fields(from,message))')
+    data =  graph.get('billy.peters.10?fields=id,name,statuses.fields(from,message,comments.fields(from,message))')
 
+    #import pdb;
+    #pdb.set_trace()
+
+    # parse every status message
+    counter = 0 
+    for status_update in data['statuses']['data']:
+        print data['statuses']['data'][counter]['message']
+        counter += 1
+
+    # add into a corpus
+
+
+    #return data
 
