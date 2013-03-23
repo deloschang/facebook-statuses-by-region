@@ -6,7 +6,13 @@ from django.utils import simplejson
 
 import random
 
-FB_DESIGNATED = 'billy.peters.10'
+SKIP_CREATION = True
+#FB_DESIGNATED = 'billy.peters.10'
+#DESIGNATED = 'Billy Peters'  
+
+FB_DESIGNATED = 'becca.rothfeld'
+DESIGNATED = 'Becca Rothfeld'
+
 
 
 def markov_chain():
@@ -53,16 +59,18 @@ def home(request):
         access_token = request.user.social_auth.all().get(user=request.user, provider='facebook').extra_data['access_token']
 
         # pull the data from facebook
-        #data_amount = pull_facebook(access_token)
-        data_amount = 'hello' #dummy
+        if SKIP_CREATION == True:
+            data_amount = '' #dummy
+        else: 
+            data_amount = pull_facebook(access_token)
 
         # generate the markov chain
         markov = markov_chain()
 
         # construct result
-        result = construct_markov(markov_chain = markov, word_count=600)
+        result = "..."+construct_markov(markov_chain = markov, word_count=250)+"..."
 
-        return render_to_response('loggedin.html', {'data_amount' : data_amount, 'result' : result })
+        return render_to_response('loggedin.html', {'data_amount' : data_amount, 'result' : result, 'name' : DESIGNATED })
 
     except AttributeError:
         # not logged in yet
