@@ -4,25 +4,71 @@ from facepy import GraphAPI
 #import json
 from django.utils import simplejson
 
+import random
+
+DESIGNATED = "Billy Peters"
+FB_DESIGNATED = 'billy.peters.10'
+
+def markov_chain():
+    file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
+
+    markov_chain = {}
+    word1 = "\n"
+    word2 = "\n"
+
+    file = open(file_paths)
+
+    print "Reading lines..."
+
+    for line in file:
+        for current_word in line.split():
+            if current_word != "":
+                markov_chain.setdefault((word1, word2), []).append(current_word)
+                word1 = word2
+                word2 = current_word
+    return markov_chain
+ 
+def construct_markov(markov_chain, word_count):
+
+    print "Constructing..."
+
+    generated_sentence = ""
+    word_tuple = random.choice(markov_chain.keys())
+    w1 = word_tuple[0]
+    w2 = word_tuple[1]
+    
+    for i in xrange(word_count):
+        #"total count" is a special key used to track word frequency.
+        newword = random.choice(markov_chain[(w1, w2)])
+        generated_sentence = generated_sentence + " " + newword
+        w1 = w2
+        w2 = newword
+        
+    return generated_sentence
+
 def home(request):
 
     # test for successful login
     try: 
         access_token = request.user.social_auth.all().get(user=request.user, provider='facebook').extra_data['access_token']
-        results = pull_facebook(access_token)
 
-        #import pdb;
-        #pdb.set_trace()
+        # pull the data from facebook
+        #data_amount = pull_facebook(access_token)
+        data_amount = 'hello' #dummy
 
-        return render_to_response('loggedin.html', {'results' : results})
+        # generate the markov chain
+        markov = markov_chain()
+
+        # construct result
+        result = construct_markov(markov_chain = markov, word_count=600)
+
+        return render_to_response('loggedin.html', {'data_amount' : data_amount, 'result' : result })
 
     except AttributeError:
         # not logged in yet
         return render_to_response('main.html')
 
 def pull_facebook(access_token):
-    DESIGNATED = "Billy Peters"
-    FB_DESIGNATED = 'billy.peters.10'
 
     graph = GraphAPI(access_token)
 
@@ -87,7 +133,8 @@ def pull_facebook(access_token):
     corpus.close()
 
 
-    return 'Extracted '+str(total_counter)+' messages and '+str(total_comment_counter)+' comments.'
+    # return trivia
+    return 'Extracted '+str(total_counter)+' statuses and '+str(total_comment_counter)+' comments.'
 
-    #return data
 
+ 
