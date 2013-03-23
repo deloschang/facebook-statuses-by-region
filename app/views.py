@@ -7,13 +7,8 @@ from django.utils import simplejson
 import random
 
 SKIP_CREATION = True
-#FB_DESIGNATED = 'billy.peters.10'
-#DESIGNATED = 'Billy Peters'  
-
-FB_DESIGNATED = 'becca.rothfeld'
-DESIGNATED = 'Becca Rothfeld'
-
-
+FB_DESIGNATED = 'billy.peters.10'
+DESIGNATED = 'Billy Peters'  
 
 def markov_chain():
     file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
@@ -44,7 +39,6 @@ def construct_markov(markov_chain, word_count):
     w2 = word_tuple[1]
     
     for i in xrange(word_count):
-        #"total count" is a special key used to track word frequency.
         newword = random.choice(markov_chain[(w1, w2)])
         generated_sentence = generated_sentence + " " + newword
         w1 = w2
@@ -96,17 +90,10 @@ def pull_facebook(access_token):
 
         data = full_data['data']
 
-        #import pdb;
-        #pdb.set_trace()
-
-
-
         # PARSE
         counter = 0 
         for status_update in data:
             # parse the status updates
-            #import pdb;
-            #pdb.set_trace()
 
             if 'message' in data[counter]:
                 message = data[counter]['message']
