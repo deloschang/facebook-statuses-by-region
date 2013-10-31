@@ -4,6 +4,8 @@ from facepy import GraphAPI
 #import json
 from django.utils import simplejson
 
+from app.models import Statuses
+
 import random
 
 SKIP_CREATION = False
@@ -107,11 +109,8 @@ def pull_facebook(access_token):
                         if 'message' in data[counter]:
                             message = data[counter]['message']
                             print message
+                            # save hometown and message
                             # Save into database 
-                            # save hometown 
-
-                            #corpus.write(message.encode('utf-8') + "\n")
-
 
                         # parse the comment messages
                         #comment_counter = 0 
