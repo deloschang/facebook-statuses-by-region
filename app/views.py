@@ -109,8 +109,12 @@ def pull_facebook(access_token):
                         if 'message' in data[counter]:
                             message = data[counter]['message']
                             print message
+
                             # save hometown and message
                             # Save into database 
+                            unit = Statuses(message=message, hometown_name=hometown_name,
+                                    hometown_id=hometown_id)
+                            unit.save()
 
                         # parse the comment messages
                         #comment_counter = 0 
