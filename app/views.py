@@ -6,12 +6,10 @@ from django.utils import simplejson
 
 import random
 
-SKIP_CREATION = True
-FB_DESIGNATED = 'billy.peters.10'
-DESIGNATED = 'Billy Peters'  
+SKIP_CREATION = False
 
 def markov_chain():
-    #file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
+    file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
 
     markov_chain = {}
     word1 = "\n"
@@ -59,16 +57,17 @@ def home(request):
             data_amount = pull_facebook(access_token)
 
         # generate the markov chain
-        markov = markov_chain()
+        #markov = markov_chain()
 
         # construct result
-        result = "..."+construct_markov(markov_chain = markov, word_count=250)+"..."
+        #result = "..."+construct_markov(markov_chain = markov, word_count=250)+"..."
 
-        return render_to_response('loggedin.html', {'data_amount' : data_amount, 'result' : result, 'name' : DESIGNATED })
+        return render_to_response('loggedin.html', {'data_amount' : data_amount})
 
     except AttributeError:
         # not logged in yet
         return render_to_response('main.html')
+
 
 def pull_facebook(access_token):
 
@@ -77,59 +76,64 @@ def pull_facebook(access_token):
     # offset for pagination
     offset = 0
 
-    full_data =  graph.get(FB_DESIGNATED+'/statuses?limit=100&offset='+str(offset))
+
+    # Haven't implemented checks for after 5000 friends...
+    full_data = graph.get('me/friends?fields=name,hometown')
+
+    print full_data['data'][6]['id']
 
 
+    #full_data =  graph.get(FB_DESIGNATED+'/statuses?limit=100&offset='+str(offset))
     # initialize a unique corpus text file
-    corpus = open("output/"+FB_DESIGNATED+".txt", 'w')
+    #corpus = open("output/"+FB_DESIGNATED+".txt", 'w')
 
-    # keep scraping until no more material
-    total_counter = 0 
-    total_comment_counter = 0
-    while not not full_data['data']:
+    ## keep scraping until no more material
+    #total_counter = 0 
+    #total_comment_counter = 0
+    #while not not full_data['data']:
 
-        data = full_data['data']
+        #data = full_data['data']
 
-        # PARSE
-        counter = 0 
-        for status_update in data:
-            # parse the status updates
+        ## PARSE
+        #counter = 0 
+        #for status_update in data:
+            ## parse the status updates
 
-            if 'message' in data[counter]:
-                message = data[counter]['message']
-                corpus.write(message.encode('utf-8') + "\n")
-
-
-            # parse the comment messages
-            comment_counter = 0 
-            if 'comments' in data[counter]:
-                for each_comment in data[counter]['comments']['data']:
-
-                    # integrity check for chosen user
-                    if data[counter]['comments']['data'][comment_counter]['from']['name'] == DESIGNATED:
-                        corpus.write(data[counter]['comments']['data'][comment_counter]['message'].encode('utf-8') + "\n")
-
-                    comment_counter += 1
+            #if 'message' in data[counter]:
+                #message = data[counter]['message']
+                #corpus.write(message.encode('utf-8') + "\n")
 
 
-            counter += 1
+            ## parse the comment messages
+            #comment_counter = 0 
+            #if 'comments' in data[counter]:
+                #for each_comment in data[counter]['comments']['data']:
+
+                    ## integrity check for chosen user
+                    #if data[counter]['comments']['data'][comment_counter]['from']['name'] == DESIGNATED:
+                        #corpus.write(data[counter]['comments']['data'][comment_counter]['message'].encode('utf-8') + "\n")
+
+                    #comment_counter += 1
 
 
-        print 'finished one loop. starting another..'
+            #counter += 1
 
-        # refresh
-        offset += 100
-        total_counter += counter
-        total_comment_counter += comment_counter
 
-        full_data = graph.get(FB_DESIGNATED+'/statuses?limit=100&offset='+str(offset))
+        #print 'finished one loop. starting another..'
+
+        ## refresh
+        #offset += 100
+        #total_counter += counter
+        #total_comment_counter += comment_counter
+
+        #full_data = graph.get(FB_DESIGNATED+'/statuses?limit=100&offset='+str(offset))
     
 
-    corpus.close()
+    #corpus.close()
 
 
     # return trivia
-    return 'Extracted '+str(total_counter)+' statuses and '+str(total_comment_counter)+' comments.'
+    #return 'Extracted '+str(total_counter)+' statuses and '+str(total_comment_counter)+' comments.'
 
 
  
