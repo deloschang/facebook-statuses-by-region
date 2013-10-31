@@ -73,67 +73,72 @@ def pull_facebook(access_token):
 
     graph = GraphAPI(access_token)
 
-    # offset for pagination
-    offset = 0
-
-
+##### GET LIST OF FRIENDS####
     # Haven't implemented checks for after 5000 friends...
-    full_data = graph.get('me/friends?fields=name,hometown')
+    friend_data = graph.get('me/friends?fields=name,hometown')
 
-    print full_data['data'][6]['id']
+# ONLY SCRAPE IF HOMETOWN AND STATUSES ARE AVAILABLE#
+    for person in friend_data['data']:
+        test_id = person['id']
+        print person
 
+        if 'hometown' in person:
+            hometown_obj = person['hometown']
+            hometown_id = hometown_obj['id']
+            hometown_name = hometown_obj['name']
 
-    #full_data =  graph.get(FB_DESIGNATED+'/statuses?limit=100&offset='+str(offset))
-    # initialize a unique corpus text file
-    #corpus = open("output/"+FB_DESIGNATED+".txt", 'w')
+            offset = 0
+            # offset for pagination
+            full_data =  graph.get(test_id+'/statuses?limit=100&offset='+str(offset))
 
-    ## keep scraping until no more material
-    #total_counter = 0 
-    #total_comment_counter = 0
-    #while not not full_data['data']:
+            # Found statuses
+            if full_data['data']:
+                ## keep scraping until no more material
+                total_counter = 0 
+                #total_comment_counter = 0
+                while full_data['data']:
+                    data = full_data['data']
 
-        #data = full_data['data']
+                    # PARSE
+                    counter = 0 
+                    for status_update in data:
+                        # parse the status updates
 
-        ## PARSE
-        #counter = 0 
-        #for status_update in data:
-            ## parse the status updates
+                        if 'message' in data[counter]:
+                            message = data[counter]['message']
+                            print message
+                            # Save into database 
+                            # save hometown 
 
-            #if 'message' in data[counter]:
-                #message = data[counter]['message']
-                #corpus.write(message.encode('utf-8') + "\n")
-
-
-            ## parse the comment messages
-            #comment_counter = 0 
-            #if 'comments' in data[counter]:
-                #for each_comment in data[counter]['comments']['data']:
-
-                    ## integrity check for chosen user
-                    #if data[counter]['comments']['data'][comment_counter]['from']['name'] == DESIGNATED:
-                        #corpus.write(data[counter]['comments']['data'][comment_counter]['message'].encode('utf-8') + "\n")
-
-                    #comment_counter += 1
-
-
-            #counter += 1
+                            #corpus.write(message.encode('utf-8') + "\n")
 
 
-        #print 'finished one loop. starting another..'
+                        # parse the comment messages
+                        #comment_counter = 0 
+                        #if 'comments' in data[counter]:
+                            #for each_comment in data[counter]['comments']['data']:
 
-        ## refresh
-        #offset += 100
-        #total_counter += counter
-        #total_comment_counter += comment_counter
+                                ## integrity check for chosen user
+                                #if data[counter]['comments']['data'][comment_counter]['from']['name'] == DESIGNATED:
+                                    ##
+                                    #corpus.write(data[counter]['comments']['data'][comment_counter]['message'].encode('utf-8') + "\n")
 
-        #full_data = graph.get(FB_DESIGNATED+'/statuses?limit=100&offset='+str(offset))
-    
-
-    #corpus.close()
-
-
-    # return trivia
-    #return 'Extracted '+str(total_counter)+' statuses and '+str(total_comment_counter)+' comments.'
+                                #comment_counter += 1
 
 
- 
+                        counter += 1
+
+
+                    print 'finished one loop. starting another..'
+
+                    # refresh
+                    offset += 100
+                    total_counter += counter
+                    #total_comment_counter += comment_counter
+
+                    full_data = graph.get(test_id+'/statuses?limit=100&offset='+str(offset))
+
+    return 'Extracted '+str(total_counter)+' statuses'
+
+
+     
