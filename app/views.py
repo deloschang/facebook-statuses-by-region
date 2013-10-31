@@ -11,7 +11,7 @@ FB_DESIGNATED = 'billy.peters.10'
 DESIGNATED = 'Billy Peters'  
 
 def markov_chain():
-    file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
+    #file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
 
     markov_chain = {}
     word1 = "\n"
