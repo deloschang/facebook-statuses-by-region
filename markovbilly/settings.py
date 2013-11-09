@@ -10,6 +10,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
 
 DATABASES = {
         'default': {
