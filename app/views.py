@@ -10,42 +10,6 @@ import random
 
 SKIP_CREATION = False
 
-def markov_chain():
-    file_paths = "/Users/deloschang/Documents/self_projects/markovbilly/output/"+FB_DESIGNATED+".txt"
-
-    markov_chain = {}
-    word1 = "\n"
-    word2 = "\n"
-
-    file = open(file_paths)
-
-    print "Reading lines..."
-
-    for line in file:
-        for current_word in line.split():
-            if current_word != "":
-                markov_chain.setdefault((word1, word2), []).append(current_word)
-                word1 = word2
-                word2 = current_word
-    return markov_chain
- 
-def construct_markov(markov_chain, word_count):
-
-    print "Constructing..."
-
-    generated_sentence = ""
-    word_tuple = random.choice(markov_chain.keys())
-    w1 = word_tuple[0]
-    w2 = word_tuple[1]
-    
-    for i in xrange(word_count):
-        newword = random.choice(markov_chain[(w1, w2)])
-        generated_sentence = generated_sentence + " " + newword
-        w1 = w2
-        w2 = newword
-        
-    return generated_sentence
-
 def home(request):
 
     # test for successful login
@@ -82,7 +46,6 @@ def pull_facebook(access_token):
 # ONLY SCRAPE IF HOMETOWN AND STATUSES ARE AVAILABLE#
     for person in friend_data['data']:
         test_id = person['id']
-        print person
 
         if 'hometown' in person:
             hometown_obj = person['hometown']
@@ -108,7 +71,7 @@ def pull_facebook(access_token):
 
                         if 'message' in data[counter]:
                             message = data[counter]['message']
-                            print message
+                            #print message
 
                             # save hometown and message
                             # Save into database 
@@ -132,7 +95,7 @@ def pull_facebook(access_token):
                         counter += 1
 
 
-                    print 'finished one loop. starting another..'
+                    print('finished one loop. starting another..')
 
                     # refresh
                     offset += 100
