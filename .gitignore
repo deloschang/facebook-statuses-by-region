@@ -1,3 +1,5 @@
 settings.py
 output/
 venv/
+*.pyc
+staticfiles
