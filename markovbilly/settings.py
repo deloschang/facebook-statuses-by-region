@@ -16,7 +16,7 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'linguistics',                      # Or path to database file if using sqlite3.
+            'NAME': 'test',                      # Or path to database file if using sqlite3.
             'USER': '',                      # Not used with sqlite3.
             'PASSWORD': '',                  # Not used with sqlite3.
             'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -194,21 +194,21 @@ LOGGING = {
 }
 
 # Heroku settings
-import dj_database_url
+#import dj_database_url
 
-DATABASES['default'] = dj_database_url.config()
+#DATABASES['default'] = dj_database_url.config()
 
-# Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+## Honor the 'X-Forwarded-Proto' header for request.is_secure()
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
+## Allow all host headers
+#ALLOWED_HOSTS = ['*']
 
-# Static asset configuration
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = 'staticfiles'
-STATIC_URL = '/static/'
+## Static asset configuration
+#BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+#STATIC_ROOT = 'staticfiles'
+#STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+#STATICFILES_DIRS = (
+    #os.path.join(BASE_DIR, 'static'),
+#)
